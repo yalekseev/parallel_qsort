@@ -6,9 +6,11 @@
 
 class ThreadJoiner {
 public:
-  ThreadJoiner(std::vector<std::thread> & threads) : m_threads(threads) {
+  ThreadJoiner() = delete;
+  ThreadJoiner(const ThreadJoiner & other) = delete;
+  ThreadJoiner & operator=(const ThreadJoiner & other) = delete;
 
-  }
+  ThreadJoiner(std::vector<std::thread> & threads) : m_threads(threads) { }
 
   ~ThreadJoiner() {
     for (auto & th : m_threads) {
