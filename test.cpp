@@ -1,17 +1,37 @@
 #include <algorithm>
 #include <iostream>
 #include <iterator>
+#include <cassert>
+#include <cstdlib>
 #include <vector>
 
 #include "parallel_sort.h"
 
+void generate_vector(std::vector<int> & v) {
+  v.clear();
+
+  std::size_t size = std::rand() % 50000 + 1;
+
+  v.reserve(size);
+  for (std::size_t i = 0; i < size; ++i) {
+    v.push_back(std::rand());
+  }
+}
+
 int main() {
-    std::vector<int> v = { 3, 1, 8, 5, 10, 7, 21, 14, 37, 29, 2, 43, 7, 67 };
+  std::srand(123);
 
-    parallel_sort(v.begin(), v.end());
+  for (size_t i = 0; i < 100; ++i) {
+    std::vector<int> v1;
+    generate_vector(v1);
 
-    std::copy(v.begin(), v.end(), std::ostream_iterator<int>(std::cout, " "));
-    std::cout << std::endl;
+    std::vector<int> v2(v1);
 
-    return 0;
+    std::sort(v1.begin(), v1.end());
+    parallel_sort(v2.begin(), v2.end());
+
+    assert(v1 == v2);
+  }
+
+  return 0;
 }
