@@ -23,10 +23,10 @@ public:
 
   template <typename F>
   std::future<void> submit(F f) {
-    std::packaged_task<void()> task(f);
+    task_type task(f);
     std::future<void> res = task.get_future();
 
-    m_work_queue.push(std::move(task));
+    m_main_queue.push(std::move(task));
 
     return res;
   }
@@ -34,12 +34,23 @@ public:
   void run_pending_tasks();
 
 private:
-  void do_work();
+  typedef std::packaged_task<void ()> task_type;
+  typedef WorkQueue<task_type> work_queue_type;
+
+  void do_work(std::size_t thread_index);
+  bool pop_task_from_my_queue(task_type & task);
+  bool pop_task_from_main_queue(task_type & task);
+  bool pop_task_from_other_queue(task_type & task);
 
   std::atomic<bool> m_done;
-  WorkQueue<std::packaged_task<void ()> > m_work_queue;
+  work_queue_type m_main_queue;
+  std::vector<std::shared_ptr<work_queue_type> > m_thread_queues;
   std::vector<std::thread> m_workers;
   ThreadJoiner m_thread_joiner;
+
+  // thread local members
+  static thread_local std::size_t m_my_index;
+  static thread_local work_queue_type * m_my_queue;
 };
 
 #endif
