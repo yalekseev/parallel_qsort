@@ -11,7 +11,7 @@
 #include <mutex>
 
 #include "thread_joiner.h"
-
+#include "work_queue.h"
 
 class ThreadPool {
 public:
@@ -25,10 +25,8 @@ public:
   std::future<void> submit(F f) {
     std::packaged_task<void()> task(f);
     std::future<void> res = task.get_future();
-    {
-      std::lock_guard<std::mutex> lock(m_mutex);
-      m_work_queue.push_back(std::move(task));
-    }
+
+    m_work_queue.push(std::move(task));
 
     return res;
   }
@@ -39,8 +37,7 @@ private:
   void do_work();
 
   std::atomic<bool> m_done;
-  std::deque<std::packaged_task<void ()> > m_work_queue;
-  std::mutex m_mutex;
+  WorkQueue<std::packaged_task<void ()> > m_work_queue;
   std::vector<std::thread> m_workers;
   ThreadJoiner m_thread_joiner;
 };

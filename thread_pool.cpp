@@ -28,13 +28,7 @@ ThreadPool::~ThreadPool() {
 
 void ThreadPool::run_pending_tasks() {
   std::packaged_task<void ()> task;
-  {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    if (!m_work_queue.empty()) {
-      task = std::move(m_work_queue.front());
-      m_work_queue.pop_front();
-    }
-  }
+  m_work_queue.try_pop(task);
 
   if (task.valid()) {
     task();
