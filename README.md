@@ -16,6 +16,10 @@ Usage
 int main() {
   std::vector<int> v = { 5, 4, 3, 2, 1, 6 };
   parallel_sort(v.begin(), v.end());
+
   std::copy(v.begin(), v.end(), std::ostream_iterator<int>(std::cout, " "));
   std::cout << std::endl;
+
+  return 0;
+}
 ```
