@@ -21,7 +21,7 @@ void generate_vector(std::vector<int> & v) {
 int main() {
   std::srand(123);
 
-  for (size_t i = 0; i < 10; ++i) {
+  for (size_t i = 0; i < 50; ++i) {
     std::vector<int> v1;
     generate_vector(v1);
 

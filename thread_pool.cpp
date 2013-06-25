@@ -14,11 +14,16 @@ thread_local std::size_t ThreadPool::m_my_index;
 thread_local ThreadPool::work_queue_type * ThreadPool::m_my_queue;
 
 ThreadPool::ThreadPool() : m_done(false) , m_thread_joiner(m_workers) {
-  std::size_t num_threads = std::max(std::thread::hardware_concurrency(), 2U);
+  std::size_t num_threads = std::max(std::thread::hardware_concurrency(), 4U);
 
   try {
+    // Create per thread queues prior to creating threads
     for (std::size_t i = 0; i < num_threads; ++i) {
       m_thread_queues.push_back(std::shared_ptr<work_queue_type>(new work_queue_type));
+    }
+
+    // Create working thresds
+    for (std::size_t i = 0; i < num_threads; ++i) {
       m_workers.push_back(std::thread(&ThreadPool::do_work, this, i));
     }
   } catch (...) {
