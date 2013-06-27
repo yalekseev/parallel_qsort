@@ -1,3 +1,6 @@
+#ifndef PARALLEL_SORT_H
+#define PARALLEL_SORT_H
+
 #include <algorithm>
 #include <iterator>
 #include <thread>
@@ -19,6 +22,15 @@ public:
     ParallelSorter & operator=(const ParallelSorter & other) = delete;
 
     void sort(Iterator begin, Iterator end) {
+        m_thread_pool.submit(std::bind(&ParallelSorter::do_sort, this, begin, end));
+
+        while (!m_thread_pool.empty()) {
+            m_thread_pool.run_pending_tasks();
+        }
+    }
+
+private:
+    void do_sort(Iterator begin, Iterator end) {
       std::size_t size = std::distance(begin, end);
       if (size < 2) {
         return;
@@ -28,16 +40,10 @@ public:
 
       std::nth_element(begin, mid, end);
 
-      auto f1 = m_thread_pool.submit(std::bind(&ParallelSorter::sort, this, begin, mid));
-      auto f2 = m_thread_pool.submit(std::bind(&ParallelSorter::sort, this, mid + 1, end));
-
-      while (!future_is_ready(f1) || !future_is_ready(f2)) {
-        m_thread_pool.run_pending_tasks();
-        std::this_thread::yield();
-      }
+      m_thread_pool.submit(std::bind(&ParallelSorter::do_sort, this, begin, mid));
+      m_thread_pool.submit(std::bind(&ParallelSorter::do_sort, this, mid + 1, end));
     }
 
-private:
     ThreadPool m_thread_pool;
 };
 
@@ -48,3 +54,5 @@ void parallel_sort(Iterator begin, Iterator end) {
     internal::ParallelSorter<Iterator> sorter;
     sorter.sort(begin, end);
 }
+
+#endif
