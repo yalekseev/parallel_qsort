@@ -10,6 +10,8 @@
 
 #include "thread_pool.h"
 
+namespace internal {
+
 thread_local std::size_t ThreadPool::m_my_index;
 thread_local ThreadPool::work_queue_type * ThreadPool::m_my_queue;
 
@@ -24,8 +26,9 @@ ThreadPool::ThreadPool() : m_done(false), m_num_tasks(0), m_thread_joiner(m_work
         }
 
         // Create working thresds
+        m_workers.resize(num_threads);
         for (std::size_t i = 0; i < num_threads; ++i) {
-            m_workers.push_back(std::thread(&ThreadPool::do_work, this, i));
+            m_workers[i] = std::thread(&ThreadPool::do_work, this, i);
         }
     } catch (...) {
         m_done = true;
@@ -76,3 +79,5 @@ void ThreadPool::do_work(std::size_t thread_index) {
         run_pending_tasks();
     }
 }
+
+} // namespace internal

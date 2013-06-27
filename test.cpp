@@ -10,7 +10,7 @@
 void generate_vector(std::vector<int> & v) {
   v.clear();
 
-  std::size_t size = std::rand() % 10000 + 1;
+  std::size_t size = std::rand() % 5000000 + 1;
 
   v.reserve(size);
   for (std::size_t i = 0; i < size; ++i) {
@@ -21,7 +21,7 @@ void generate_vector(std::vector<int> & v) {
 int main() {
   std::srand(123);
 
-  for (size_t i = 0; i < 2000; ++i) {
+  for (size_t i = 0; i < 10; ++i) {
     std::vector<int> v1;
     generate_vector(v1);
 

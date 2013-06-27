@@ -13,6 +13,13 @@
 #include "thread_joiner.h"
 #include "work_queue.h"
 
+namespace internal {
+
+template <typename R>
+bool future_is_ready(std::future<R> & future) {
+  return (future.wait_for(std::chrono::seconds(0)) == std::future_status::ready);
+}
+
 class ThreadPool {
 public:
     ThreadPool();
@@ -61,5 +68,7 @@ private:
     static thread_local std::size_t m_my_index;
     static thread_local work_queue_type * m_my_queue;
 };
+
+} // namespace internal
 
 #endif

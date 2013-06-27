@@ -9,11 +9,6 @@
 
 namespace internal {
 
-template <typename R>
-bool future_is_ready(std::future<R> & future) {
-  return (future.wait_for(std::chrono::seconds(0)) == std::future_status::ready);
-}
-
 template <typename Iterator>
 class ParallelSorter {
 public:

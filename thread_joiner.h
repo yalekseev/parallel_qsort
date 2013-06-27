@@ -4,6 +4,8 @@
 #include <thread>
 #include <vector>
 
+namespace internal {
+
 class ThreadJoiner {
 public:
     ThreadJoiner() = delete;
@@ -23,5 +25,7 @@ public:
 private:
     std::vector<std::thread> & m_threads;
 };
+
+} // namespace internal
 
 #endif

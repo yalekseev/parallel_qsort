@@ -4,6 +4,8 @@
 #include <deque>
 #include <mutex>
 
+namespace internal {
+
 template <typename T>
 class WorkQueue {
 public:
@@ -53,5 +55,7 @@ bool WorkQueue<T>::try_steal(T & val) {
 
     return false;
 }
+
+} // namespace internal
 
 #endif
