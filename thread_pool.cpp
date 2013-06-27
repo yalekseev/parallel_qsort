@@ -25,7 +25,7 @@ ThreadPool::ThreadPool() : m_done(false), m_num_tasks(0), m_thread_joiner(m_work
             m_thread_queues.push_back(std::shared_ptr<work_queue_type>(new work_queue_type));
         }
 
-        // Create working thresds
+        // Create working threads
         m_workers.resize(num_threads);
         for (std::size_t i = 0; i < num_threads; ++i) {
             m_workers[i] = std::thread(&ThreadPool::do_work, this, i);
@@ -62,13 +62,18 @@ bool ThreadPool::empty() const {
     return m_num_tasks == 0;
 }
 
-void ThreadPool::run_pending_tasks() {
+bool ThreadPool::run_pending_tasks() {
     task_type task;
 
     if (pop_task_from_my_queue(task) || pop_task_from_main_queue(task) || pop_task_from_other_queue(task)) {
         task();
+
         --m_num_tasks;
+
+        return true;
     }
+
+    return false;
 }
 
 void ThreadPool::do_work(std::size_t thread_index) {

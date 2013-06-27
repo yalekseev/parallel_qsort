@@ -46,18 +46,23 @@ public:
     /*! Return true if there are no pending or running tasks. */
     bool empty() const;
 
-    void run_pending_tasks();
+    /*! Get next pending task and run it. */
+    bool run_pending_tasks();
 
 private:
     typedef std::packaged_task<void ()> task_type;
     typedef WorkQueue<task_type> work_queue_type;
 
     void do_work(std::size_t thread_index);
+    /*! Get next pending task from local queue. */
     bool pop_task_from_my_queue(task_type & task);
+    /*! Get next pending task from main queue. */
     bool pop_task_from_main_queue(task_type & task);
+    /*! Get next pending task from neigbouhrs queue. */
     bool pop_task_from_other_queue(task_type & task);
 
     std::atomic<bool> m_done;
+    // Number of pending or running tasks
     std::atomic<int> m_num_tasks;
     work_queue_type m_main_queue;
     std::vector<std::shared_ptr<work_queue_type> > m_thread_queues;
