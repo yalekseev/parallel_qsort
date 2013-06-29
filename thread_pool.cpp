@@ -16,7 +16,7 @@ thread_local std::size_t ThreadPool::m_my_index;
 thread_local ThreadPool::work_queue_type * ThreadPool::m_my_queue;
 
 ThreadPool::ThreadPool() : m_done(false), m_num_tasks(0), m_thread_joiner(m_workers) {
-    std::size_t num_threads = std::max(std::thread::hardware_concurrency(), 2U);
+    std::size_t num_threads = std::max(std::thread::hardware_concurrency(), 3U);
     --num_threads;
 
     try {
